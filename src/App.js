@@ -21,12 +21,12 @@ class App extends React.Component {
     gettindWeather = async (e) => {
         e.preventDefault();
         var CITY = e.target.elements.city.value;
-        var country = e.target.elements.country.value;
-        console.log("страна из формы ввода: " + country);
         var lat = 0;
         var lon = 0;
-        var name;
         var i = 0;
+        var j;
+        var local_names = "";
+        var succes = 0;
         if(CITY)
         {
             //Нужно сначала получить координаты, а потом погоду
@@ -38,21 +38,32 @@ class App extends React.Component {
             console.log(coordinates_json);
             console.log("Преобразовали в javascipt-object, тип данных: "+ typeof coordinates_json);
 
-                if(name != CITY){
-                    console.log(i +"-й кандидат: " + coordinates_json[i])
-                    name = coordinates_json[i]["name"];
-                    console.log(name);
-                    console.log(CITY);
-                }
-                //Делай отбор по локальным именам!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if(name == CITY) {
+            /*Соверщенно не нужно вводить страну, нужно сделать отбор по локальным именам.
+            * Проверяем все строки из списка. Если хотя бы в одной из них существует то же имя, что мы ввели,
+            * тогда выводим информацию из текущей строки.
+            * Если такой строки не нашлось, тогда широта и долгота остаются в нулевом состоянии
+            * и мы выводим надпись "К сожалению, мы не нашли город, который Вы искали."
+            */
+           console.log("Количество вариантов ответа: " + coordinates_json.length);
+           for (j=0; j < coordinates_json.length; j++){
+            //console.log("Количество записей в "+j+"-ой строчке: " + coordinates_json[j]["local_names"]);
+            local_names = coordinates_json[j]["local_names"];
+            for(var field in local_names){
+                console.log("Печатаем значение поля локального имени: "+ local_names[field])
+                if(local_names[field] == CITY){
+                    console.log("нашли похожее имя: " + local_names[field]);
+                    console.log("Номер записи: "+ j);
                     console.log("Всё успешно, записываем координаты")
                     lat = coordinates_json[i]["lat"];
                     console.log("широта: "+ lat);
                     lon = coordinates_json[i]["lon"];
                     console.log("долгота " + lon);
+                    succes = 1;
                 }
-            if (lat&lon != 0){
+
+            }
+           }
+            if (succes){
                 const API_URL = await
                 fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
                 const data = await API_URL.json();
