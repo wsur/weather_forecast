@@ -2,13 +2,15 @@ import React from "react";
 import Info from "./components/info";
 import Weather from "./components/weather";
 import Form from "./components/form";
+import Chart from "./components/chartForm";
 
 const API_KEY = "e228dc694c194eca0b0879ae1ad4b0f5";
 //
-
+var lat = 0;
+var lon = 0;
 
 class App extends React.Component {
-
+    
     state = {
         temp: undefined,
         city: undefined,
@@ -21,8 +23,6 @@ class App extends React.Component {
     gettindWeather = async (e) => {
         e.preventDefault();
         var CITY = e.target.elements.city.value;
-        var lat = 0;
-        var lon = 0;
         var i = 0;
         var j;
         var local_names = "";
@@ -110,6 +110,11 @@ class App extends React.Component {
             });
         }
     }
+
+    gettingChart = async (e) => {
+        e.preventDefault();
+        console.log(lat);
+    }
     
 
     render() {
@@ -123,6 +128,7 @@ class App extends React.Component {
                             </div>
                             <div className="col-sm-7 form">
                                 <Form weatherMethod={this.gettindWeather} />
+                                <Chart chartMethod = {this.gettingChart}/>
                                 <Weather
                                 temp = {this.state.temp}
                                 city = {this.state.city}
